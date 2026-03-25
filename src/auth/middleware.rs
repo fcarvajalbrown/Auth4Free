@@ -1,5 +1,7 @@
 // src/auth/middleware.rs
+//! Authentication middleware utilities
 
+#[derive(Default)]
 pub struct AuthMiddleware;
 
 impl AuthMiddleware {
