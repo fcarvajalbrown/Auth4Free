@@ -17,7 +17,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # This is auto-provided by GitHub
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
@@ -36,5 +36,5 @@ jobs:
           override: true
       - name: Publish to crates.io
         run: |
-          cargo login ${{ secrets.cargo }}
-          cargo publish --allow-dirty
+          cargo login ${{ secrets.CARGO }}
+          cargo publish

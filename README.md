@@ -6,6 +6,7 @@ A modern, secure, and easy-to-use authentication library for Rust applications.
 [![Build Status](https://github.com/fcarvajalbrown/Auth4Free/workflows/CI/badge.svg)](https://github.com/fcarvajalbrown/Auth4Free/actions)
  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust Version](https://img.shields.io/badge/rust-1.56%2B-blue.svg)](https://www.rust-lang.org)
+[![Release](https://github.com/fcarvajalbrown/auth4free/actions/workflows/release.yml/badge.svg)](https://github.com/fcarvajalbrown/auth4free/releases)
 
 ## 🚀 Features
 
