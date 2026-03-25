@@ -37,3 +37,7 @@ path = "examples/user_registration.rs"
 [[example]]
 name = "web_api_integration"
 path = "examples/web_api_integration.rs"
+
+[[example]]
+name = "session_integration"
+path = "examples/session_integration.rs"
