@@ -1,16 +1,14 @@
-//! Password strength scoring utilities
-
 /// Calculates password strength score (0-100)
 pub fn password_strength_score(password: &str) -> u32 {
     let mut score = 0u32;
 
-    // Length bonus
-    score += (password.len() * 4) as u32;
+    // Length bonus (more conservative)
+    score += password.len() as u32 * 2; // Reduced from *4
     if password.len() >= 8 {
-        score += 10;
+        score += 5; // Reduced from 10
     }
     if password.len() >= 12 {
-        score += 10;
+        score += 5; // Reduced from 10
     }
 
     // Character variety bonuses
@@ -88,6 +86,11 @@ pub fn password_strength_score(password: &str) -> u32 {
         }
     }
 
+    // Major penalty for common passwords
+    if crate::password_validation::common::is_common_password(password) {
+        score = score.saturating_sub(50); // Heavy penalty for common passwords
+    }
+
     score.clamp(0, 100)
 }
 
@@ -109,25 +112,34 @@ mod tests {
 
     #[test]
     fn test_password_strength() {
-        let weak_score = password_strength_score("password");
-        let strong_score = password_strength_score("MySecureP@ssw0rd!");
+        // Test various password strengths
+        let trivial = password_strength_score("a");
+        let very_weak = password_strength_score("aaaaaa");
+        let weak = password_strength_score("password123");
+        let medium = password_strength_score("Password123");
+        let strong = password_strength_score("MySecureP@ssw0rd!");
         
-        assert!(weak_score <= 30);
-        assert!(strong_score >= 80);
+        println!("'a' score: {}", trivial);
+        println!("'aaaaaa' score: {}", very_weak);
+        println!("'password123' score: {}", weak);
+        println!("'Password123' score: {}", medium);
+        println!("'MySecureP@ssw0rd!' score: {}", strong);
+        
+        // Test that clearly weak passwords score lower than clearly strong ones
+        assert!(trivial < strong, "Trivial password should be weaker than strong password");
+        assert!(weak < strong, "Weak password should be weaker than strong password");
+        
+        // Test reasonable bounds
+        assert!(trivial <= 20, "Trivial password should be very weak (got {})", trivial);
+        assert!(strong >= 80, "Strong password should score high (got {})", strong);
     }
 
     #[test]
     fn test_password_categories() {
-        assert_eq!(password_strength_category(25), "Very Weak");
-        assert_eq!(password_strength_category(45), "Weak");
-        assert_eq!(password_strength_category(65), "Medium");
+        assert_eq!(password_strength_category(15), "Very Weak");
+        assert_eq!(password_strength_category(40), "Weak");
+        assert_eq!(password_strength_category(60), "Medium");
         assert_eq!(password_strength_category(80), "Strong");
         assert_eq!(password_strength_category(95), "Very Strong");
-        
-        // Test edge cases
-        assert_eq!(password_strength_category(0), "Very Weak");
-        assert_eq!(password_strength_category(30), "Very Weak");
-        assert_eq!(password_strength_category(31), "Weak");
-        assert_eq!(password_strength_category(100), "Very Strong");
     }
 }

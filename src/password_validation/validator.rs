@@ -36,6 +36,11 @@ pub fn validate_password(
         return Err(PasswordValidationError::EmptyPassword);
     }
 
+    // Check against common passwords FIRST (most important security check)
+    if is_common_password(password) {
+        return Err(PasswordValidationError::TooCommon);
+    }
+
     // Check length
     if password.len() < config.min_length {
         return Err(PasswordValidationError::TooShort(
@@ -44,6 +49,7 @@ pub fn validate_password(
         ));
     }
 
+    // Rest of validation logic...
     // Check character requirements
     let mut has_uppercase = false;
     let mut has_lowercase = false;
@@ -102,26 +108,23 @@ pub fn validate_password(
         }
     }
 
-    // Check against common passwords
-    if is_common_password(password) {
-        return Err(PasswordValidationError::TooCommon);
-    }
-
     Ok(())
 }
 
 /// Checks if a password is in the list
 fn is_common_password(password: &str) -> bool {
-    // In a real implementation, this would check against a comprehensive list of common passwords
     let common_passwords: HashSet<&str> = [
-        "password", "123456", "123456789", "qwerty", "abc123", "letmein", "monkey", "dragon",
+        "password", "123456", "qwerty", "admin", "welcome",
+        "password123", "abc123", "letmein", "monkey", "dragon",
+        "master", "mustang", "shadow", "baseball", "donald",
+        "superman", "harley", "12345678", "qazwsx", "princess",
     ]
     .iter()
     .cloned()
     .collect();
 
-    common_passwords.contains(password)
-}   
+    common_passwords.contains(&password.to_lowercase().as_str())
+}
 
 #[cfg(test)]
 mod tests {
@@ -138,13 +141,14 @@ mod tests {
     #[test]
     fn test_too_short_password_internal() {
         let config = PasswordValidationConfig {
-            min_length: 12,
+            min_length: 20,
             ..Default::default()
         };
-        let result = validate_password("short", &config);
+        let password = "too_short"; // Exactly 9 characters
+        let result = validate_password(password, &config);
         assert_eq!(
             result,
-            Err(PasswordValidationError::TooShort(5, 12))
+            Err(PasswordValidationError::TooShort(9, 20))
         );
     }
 
@@ -156,9 +160,20 @@ mod tests {
     }
 
     #[test]
-    fn test_common_password_internal() {
-        let config = PasswordValidationConfig::default();
+    fn test_common_password_detection() {
+        // Test that common passwords are rejected by validation
+        let config = PasswordValidationConfig {
+            require_uppercase: false,
+            require_lowercase: false,
+            require_numbers: false,
+            require_special_chars: false,
+            min_length: 1,
+            ..Default::default()
+        };
+        
+        // "password" is in our common list, should fail validation
         let result = validate_password("password", &config);
         assert_eq!(result, Err(PasswordValidationError::TooCommon));
     }
 }
+
