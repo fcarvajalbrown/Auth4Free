@@ -1,11 +1,12 @@
 // src/user/handlers.rs
 
-use super::models::*;
+use crate::user::models::User;
 use serde_json;
+use uuid::Uuid;
 
 pub async fn create_user(user: User) -> String {
     // Simulate user creation logic
-    serde_json::to_string(&user).unwrap()
+    serde_json::to_string(&user).unwrap_or_default()
 }
 
 pub async fn get_user_by_id(id: Uuid) -> Option<User> {

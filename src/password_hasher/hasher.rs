@@ -3,6 +3,6 @@
 use bcrypt::{self, BcryptError};
 
 pub async fn hash_password(password: &str) -> Result<String, BcryptError> {
-    // Simulate password hashing logic
-    bcrypt::hash(password, bcrypt::generate_salt())
+    // Use proper cost instead of generating salt manually
+    bcrypt::hash(password, 10)
 }

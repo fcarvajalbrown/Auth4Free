@@ -1,15 +1,13 @@
 // src/token_generator/generator.rs
 
-use super::models::*;
-use jsonwebtoken::{decode, EncodingKey, Header};
-use serde_json;
+use crate::user::models::User;
+use jsonwebtoken::{encode, EncodingKey, Header};
 
-pub async fn generate_token(user: User) -> String {
-    // Simulate token generation logic
+pub async fn generate_token(user: User) -> Result<String, String> {
     encode(
         &Header::default(),
         &user,
         &EncodingKey::from_secret("secret".as_ref()),
     )
-    .unwrap()
+    .map_err(|e| e.to_string())
 }

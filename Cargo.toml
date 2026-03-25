@@ -6,11 +6,12 @@ edition = "2018"
 [dependencies]
 serde = { version = "1.0.144", features = ["derive"] }
 serde_json = "1.0.78"
-jsonwebtoken = "10.3.0"
+jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }
 bcrypt = "0.19.0"
 rand = "0.10.0"
 toml = "0.9.8"
-uuid = { version = "1.0.3", features = ["v4"] }
+uuid = { version = "1.0.3", features = ["v4", "serde"] }
+tower = { version = "0.4", features = ["util"] }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }

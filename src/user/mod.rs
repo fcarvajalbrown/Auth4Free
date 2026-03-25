@@ -1,7 +1,7 @@
 // src/user/mod.rs
 
-pub use self::models::*;
-pub use self::handlers::*;
+pub mod models;
+pub mod handlers;
 
-mod models;
-mod handlers;
+pub use models::*;
+pub use handlers::*;
