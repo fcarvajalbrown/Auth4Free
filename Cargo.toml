@@ -15,3 +15,15 @@ tower = { version = "0.4", features = ["util"] }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
+
+[[example]]
+name = "password_validation"
+path = "examples/password_validation.rs"
+
+[[example]]
+name = "user_registration"
+path = "examples/user_registration.rs"
+
+[[example]]
+name = "web_api_integration"
+path = "examples/web_api_integration.rs"
