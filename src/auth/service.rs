@@ -1,7 +1,7 @@
 // src/auth/service.rs
 
 use crate::user::models::User;
-use jsonwebtoken::{encode, EncodingKey, Header};
+use jsonwebtoken::{EncodingKey, Header, encode};
 
 pub async fn authenticate_user(user: User) -> Result<String, String> {
     // Simulate authentication logic

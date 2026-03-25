@@ -1,7 +1,7 @@
 // src/token_generator/generator.rs
 
 use crate::user::models::User;
-use jsonwebtoken::{encode, EncodingKey, Header};
+use jsonwebtoken::{EncodingKey, Header, encode};
 
 pub async fn generate_token(user: User) -> Result<String, String> {
     encode(

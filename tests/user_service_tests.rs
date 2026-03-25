@@ -1,4 +1,4 @@
-use auth4free::user::{create_user, get_user_by_id, User};
+use auth4free::user::{User, create_user, get_user_by_id};
 use uuid::Uuid;
 
 #[tokio::test]
