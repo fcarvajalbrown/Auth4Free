@@ -44,7 +44,6 @@ impl Default for InMemoryRateLimitStorage {
     }
 }
 
-
 #[async_trait::async_trait]
 impl RateLimitStorage for InMemoryRateLimitStorage {
     async fn get_state(&self, identifier: &str) -> Option<RateLimitState> {

@@ -57,7 +57,7 @@ impl RateLimitState {
     /// Record a failed authentication attempt
     pub fn record_failure(&mut self, config: &RateLimitConfig) {
         let now = SystemTime::now();
-        
+
         // Check if we're currently locked out
         if let Some(lockout_until) = self.lockout_until {
             if now < lockout_until {
@@ -71,7 +71,9 @@ impl RateLimitState {
         }
 
         // Check if we're still in the same window - COLLAPSED IF STATEMENT
-        if let Ok(elapsed) = now.duration_since(self.window_start) && elapsed > config.window_duration {
+        if let Ok(elapsed) = now.duration_since(self.window_start)
+            && elapsed > config.window_duration
+        {
             // Window has expired, reset counter
             self.attempt_count = 0;
             self.window_start = now;
@@ -86,7 +88,6 @@ impl RateLimitState {
             self.lockout_until = Some(now + config.lockout_duration);
         }
     }
-
 
     /// Record a successful authentication
     pub fn record_success(&mut self, config: &RateLimitConfig) {
