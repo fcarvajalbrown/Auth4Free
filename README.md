@@ -3,7 +3,7 @@
 A modern, secure, and easy-to-use authentication library for Rust applications.
 
 ![Test Status](https://github.com/fcarvajalbrown/authlib/workflows/Tests/badge.svg)
-[![License](https://img.shields.io/crates/l/authlib.svg)]((https://mit-license.org/))
+[![License](https://img.shields.io/crates/l/authlib.svg)](LICENSE)
 [![Rust Version](https://img.shields.io/badge/rust-1.56%2B-blue.svg)](https://www.rust-lang.org)
 
 ## 🚀 Features
