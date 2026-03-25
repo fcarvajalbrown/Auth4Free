@@ -8,7 +8,7 @@ documentation = "https://docs.rs/auth4free"
 homepage = "https://github.com/fcarvajalbrown/auth4free"
 repository = "https://github.com/fcarvajalbrown/auth4free"
 readme = "README.md"
-keywords = ["authentication", "security", "jwt", "password", "bcrypt", "rate-limiting", "session"]
+keywords = ["authentication", "security", "jwt", "password", "rate-limiting"] 
 categories = ["authentication", "web-programming", "asynchronous"]
 license = "MIT"
 
