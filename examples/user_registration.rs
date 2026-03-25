@@ -3,9 +3,9 @@
 //! This demonstrates integrating password validation into a user
 //! registration workflow.
 
-use authlib::password_hasher;
-use authlib::password_validation::*;
-use authlib::user::User;
+use auth4free::password_hasher;
+use auth4free::password_validation::*;
+use auth4free::user::User;
 use uuid::Uuid;
 
 #[derive(Debug)]

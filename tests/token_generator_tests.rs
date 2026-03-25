@@ -1,5 +1,5 @@
-use authlib::token_generator::generate_token;
-use authlib::user::User;
+use auth4free::token_generator::generate_token;
+use auth4free::user::User;
 
 #[tokio::test]
 async fn test_generate_token() {

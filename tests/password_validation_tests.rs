@@ -1,4 +1,4 @@
-use authlib::password_validation::*;
+use auth4free::password_validation::*;
 
 #[test]
 fn test_valid_password() {

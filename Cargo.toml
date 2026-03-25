@@ -1,7 +1,15 @@
 [package]
-name = "authlib"
+name = "auth4free"
 version = "0.1.0"
-edition = "2018"
+edition = "2024"
+authors = ["Felipe Carvajal Brown <fcarvajalbrown@gmail.com>"]
+description = "A modern, secure authentication library for Rust applications with password validation, JWT tokens, and bcrypt hashing."
+homepage = "https://github.com/fcarvajalbrown/auth4free"
+repository = "https://github.com/fcarvajalbrown/auth4free"
+readme = "README.md"
+keywords = ["authentication", "security", "jwt", "password", "bcrypt"]
+categories = ["authentication", "web-programming"]
+license = "MIT"
 
 [dependencies]
 serde = { version = "1.0.144", features = ["derive"] }

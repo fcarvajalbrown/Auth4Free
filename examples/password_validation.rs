@@ -3,7 +3,7 @@
 //! This example shows how to use the password validation module
 //! to validate user passwords and provide feedback on strength.
 
-use authlib::password_validation::*;
+use auth4free::password_validation::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Password Validation Examples ===\n");

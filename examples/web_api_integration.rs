@@ -3,7 +3,7 @@
 //! This demonstrates how to integrate password validation into
 //! a web API handler.
 
-use authlib::password_validation::*;
+use auth4free::password_validation::*;
 
 // Mock web framework types
 type HttpResponse = String;

@@ -1,5 +1,5 @@
-use authlib::auth::authenticate_user;
-use authlib::user::User;
+use auth4free::auth::authenticate_user;
+use auth4free::user::User;
 
 #[tokio::test]
 async fn test_authenticate_user() {
