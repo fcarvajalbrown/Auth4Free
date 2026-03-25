@@ -2,6 +2,7 @@
 
 A modern, secure, and easy-to-use authentication library for Rust applications.
 
+[![Crates.io](https://img.shields.io/crates/v/auth4free.svg)](https://crates.io/crates/auth4free)
 [![Build Status](https://github.com/fcarvajalbrown/Auth4Free/workflows/CI/badge.svg)](https://github.com/fcarvajalbrown/Auth4Free/actions)
  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust Version](https://img.shields.io/badge/rust-1.56%2B-blue.svg)](https://www.rust-lang.org)
