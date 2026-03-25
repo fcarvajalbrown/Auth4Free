@@ -60,15 +60,16 @@ impl RateLimiter {
     /// Record a failed authentication attempt
     pub async fn record_failure(&self, identifier: &str) -> Result<(), RateLimitError> {
         let mut state = match self.storage.get_state(identifier).await {
-        Some(existing_state) => existing_state,
-        None => RateLimitState::new(identifier.to_string()),
-    };
+            Some(existing_state) => existing_state,
+            None => RateLimitState::new(identifier.to_string()),
+        };
 
-    state.record_failure(&self.config);
-    self.storage.save_state(state).await
-        .map_err(|e| RateLimitError::StorageError(e.to_string()))
-}
-
+        state.record_failure(&self.config);
+        self.storage
+            .save_state(state)
+            .await
+            .map_err(|e| RateLimitError::StorageError(e.to_string()))
+    }
 
     /// Record a successful authentication attempt
     pub async fn record_success(&self, identifier: &str) -> Result<(), RateLimitError> {

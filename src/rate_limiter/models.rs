@@ -186,7 +186,7 @@ mod tests {
     #[test]
     fn test_window_reset() {
         use std::time::Duration;
-        
+
         let mut state = RateLimitState::new("test_user".to_string());
         let config = RateLimitConfig {
             max_attempts: 2,
@@ -198,12 +198,11 @@ mod tests {
         // Manually set up a state with expired window
         state.attempt_count = 2;
         state.window_start = SystemTime::now() - Duration::from_secs(2); // 2 seconds ago
-        
+
         // Record another failure - should reset window
         state.record_failure(&config);
-        
+
         // Window has expired, so we start a new window with 1 attempt
         assert_eq!(state.attempt_count, 1);
     }
-
 }

@@ -1,14 +1,15 @@
 [package]
 name = "auth4free"
-version = "0.1.0"
+version = "0.2.0"  # Update version
 edition = "2024"
 authors = ["Felipe Carvajal Brown <fcarvajalbrown@gmail.com>"]
-description = "A modern, secure authentication library for Rust applications with password validation, JWT tokens, and bcrypt hashing."
+description = "A modern, secure authentication library for Rust applications with password validation, JWT tokens, bcrypt hashing, session management, and rate limiting."
+documentation = "https://docs.rs/auth4free"
 homepage = "https://github.com/fcarvajalbrown/auth4free"
 repository = "https://github.com/fcarvajalbrown/auth4free"
 readme = "README.md"
-keywords = ["authentication", "security", "jwt", "password", "bcrypt"]
-categories = ["authentication", "web-programming"]
+keywords = ["authentication", "security", "jwt", "password", "bcrypt", "rate-limiting", "session"]
+categories = ["authentication", "web-programming", "asynchronous"]
 license = "MIT"
 
 [dependencies]

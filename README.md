@@ -14,9 +14,10 @@ A modern, secure, and easy-to-use authentication library for Rust applications.
 - **JWT Authentication** - Secure token-based authentication
 - **Password Hashing** - Industry-standard bcrypt password hashing
 - **User Management** - Complete user lifecycle management
-- **Session Management** - Secure session handling *(coming soon)*
-- **Rate Limiting** - Protection against brute force attacks *(planned)*
+- **Session Management** - Secure session handling with refresh tokens
+- **Rate Limiting** - Brute force protection with configurable limits ✨ **NEW in v0.2.0**
 - **Multi-Factor Authentication** - Enhanced security *(planned)*
+- **OAuth2 Integration** - Social login support *(planned)*
 
 ## 📦 Installation
 
@@ -24,7 +25,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-authlib = "0.1.0"
+auth4free = "0.2.0"
 ```
 
 ## 🔧 Quick Start
@@ -32,7 +33,7 @@ authlib = "0.1.0"
 ### Password Validation
 
 ```rust
-use authlib::password_validation::*;
+use auth4free::password_validation::*;
 
 let config = PasswordValidationConfig::default();
 let password = "MySecureP@ssw0rd!";
@@ -48,16 +49,96 @@ let category = password_strength_category(score);
 println!("Password strength: {} ({}/100)", category, score);
 ```
 
-### User Authentication
+### User Authentication with Rate Limiting
 
 ```rust
-use authlib::auth::authenticate_user;
-use authlib::user::User;
+use auth4free::auth::authenticate_user;
+use auth4free::rate_limiter::RateLimiter;
+use auth4free::rate_limiter::models::RateLimitConfig;
+use auth4free::user::User;
 
-async fn login_example() -> Result<String, String> {
-    let user = User::new("john_doe".to_string(), "john@example.com".to_string());
-    let token = authenticate_user(user).await?;
-    Ok(token)
+async fn login_example() -> Result<String, Box<dyn std::error::Error>> {
+    // Setup rate limiter
+    let config = RateLimitConfig::default();
+    let limiter = RateLimiter::new(config);
+    let user_ip = "192.168.1.1";
+    
+    // Check rate limit
+    match limiter.check_rate_limit(user_ip).await {
+        auth4free::rate_limiter::RateLimitResult::Allowed { .. } => {
+            // Proceed with authentication
+            let user = User::new("john_doe".to_string(), "john@example.com".to_string());
+            let token = authenticate_user(user).await?;
+            
+            // Record successful login
+            limiter.record_success(user_ip).await?;
+            
+            Ok(token)
+        }
+        auth4free::rate_limiter::RateLimitResult::Denied { .. } => {
+            // Record failed attempt
+            limiter.record_failure(user_ip).await?;
+            Err("Rate limit exceeded".into())
+        }
+    }
+}
+
+```
+
+### Session Management
+
+```rust
+use auth4free::session::SessionManager;
+use uuid::Uuid;
+use std::time::Duration;
+
+async fn session_example() -> Result<(), Box<dyn std::error::Error>> {
+    let session_manager = SessionManager::new();
+    let user_id = Uuid::new_v4();
+    
+    // Create session
+    let session = session_manager
+        .create_session(user_id, true, Some("127.0.0.1".to_string()), None)
+        .await?;
+    
+    // Validate session
+    let validation = session_manager.validate_session(session.id).await;
+    match validation {
+        auth4free::session::SessionValidation::Valid(session) => {
+            println!("Session valid for user: {}", session.user_id);
+        }
+        _ => println!("Session invalid"),
+    }
+    
+    Ok(())
+}
+
+```
+
+### Rate Limiting
+
+```rust
+use auth4free::rate_limiter::{RateLimiter, RateLimitConfig};
+use std::time::Duration;
+
+// Configure rate limiting
+let config = RateLimitConfig {
+    max_attempts: 5,           // Max 5 attempts
+    window_duration: Duration::from_secs(300),  // Per 5 minutes
+    lockout_duration: Duration::from_secs(900), // 15 minute lockout
+    reset_on_success: true,    // Reset on successful auth
+};
+
+let limiter = RateLimiter::new(config);
+
+// Check if IP is allowed to attempt login
+match limiter.check_rate_limit("192.168.1.1").await {
+    RateLimitResult::Allowed { remaining_attempts, .. } => {
+        println!("{} attempts remaining", remaining_attempts);
+    }
+    RateLimitResult::Denied { remaining_lockout_time, .. } => {
+        println!("Locked out for {:?}", remaining_lockout_time);
+    }
 }
 ```
 
@@ -72,7 +153,7 @@ async fn login_example() -> Result<String, String> {
 
 ### Password Strength Analysis
 ```rust
-use authlib::password_validation::*;
+use auth4free::password_validation::*;
 
 let passwords = vec![
     "password",                    // Very Weak
@@ -95,6 +176,7 @@ Check out the [examples](examples/) directory for complete working examples:
 - [`password_validation`](examples/password_validation.rs) - Basic password validation
 - [`user_registration`](examples/user_registration.rs) - Complete user registration flow
 - [`web_api_integration`](examples/web_api_integration.rs) - Web framework integration
+- [`session_integration`] [examples\session_integration.rs] - Session management with auth
 
 Run examples with:
 ```bash
@@ -108,23 +190,16 @@ Run all tests:
 cargo test
 ```
 
-## 📖 Documentation
-
-API documentation is available at [docs.rs](https://docs.rs/authlib).
-
 ## 🔮 Future Features
-
 ### Coming Soon
-- Session Management
-- Refresh Token System
-- Account Lockout Mechanisms
-
-### Planned Features
+- Multi-Factor Authentication (MFA)
 - OAuth2 Provider Integration (Google, GitHub, etc.)
-- Multi-Factor Authentication (TOTP, SMS, Email)
-- Rate Limiting and Brute Force Protection
 - Email Verification System
 - Role-Based Access Control (RBAC)
+### Planned Features
+- Account Lockout Mechanisms
+- Refresh Token System
+- Rate Limiting and Brute Force Protection (✓ Added in v0.2.0)
 - Audit Logging
 
 ## 🤝 Contributing
