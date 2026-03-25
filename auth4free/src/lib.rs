@@ -1,14 +1,14 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+// src/lib.rs
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub mod auth;
+pub mod password_hasher;
+pub mod password_validation;
+pub mod token_generator;
+pub mod user; // Add this line
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+// Re-export commonly used items
+pub use password_validation::password_strength_category;
+pub use password_validation::password_strength_score;
+pub use password_validation::validate_password;
+pub use password_validation::PasswordValidationConfig;
+pub use password_validation::PasswordValidationError;
