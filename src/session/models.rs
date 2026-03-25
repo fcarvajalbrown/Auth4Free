@@ -1,8 +1,8 @@
 //! Session data structures and models
 
 use serde::{Deserialize, Serialize};
+use std::time::{Duration, SystemTime};
 use uuid::Uuid;
-use std::time::{SystemTime, Duration};
 
 /// Represents an active user session
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -30,7 +30,7 @@ impl Session {
     pub fn new(user_id: Uuid, duration: Duration, persistent: bool) -> Self {
         let now = SystemTime::now();
         let expires_at = now + duration;
-        
+
         Self {
             id: Uuid::new_v4(),
             user_id,
@@ -61,8 +61,8 @@ impl Session {
 
 /// Generate a secure refresh token
 fn generate_refresh_token() -> String {
-    use rand::{distributions::Alphanumeric, Rng};
-    
+    use rand::{Rng, distributions::Alphanumeric};
+
     rand::thread_rng()
         .sample_iter(&Alphanumeric)
         .take(32)
@@ -90,7 +90,7 @@ mod tests {
     fn test_session_creation() {
         let user_id = Uuid::new_v4();
         let session = Session::new(user_id, Duration::from_secs(3600), false);
-        
+
         assert_eq!(session.user_id, user_id);
         assert!(!session.is_expired());
         assert!(!session.refresh_token.is_empty());
@@ -101,10 +101,10 @@ mod tests {
     fn test_session_expiration() {
         let user_id = Uuid::new_v4();
         let session = Session::new(user_id, Duration::from_secs(0), false);
-        
+
         // Small delay to ensure expiration
         std::thread::sleep(std::time::Duration::from_millis(1));
-        
+
         assert!(session.is_expired());
     }
 
@@ -112,10 +112,10 @@ mod tests {
     fn test_session_extension() {
         let user_id = Uuid::new_v4();
         let mut session = Session::new(user_id, Duration::from_secs(1), false);
-        
+
         // Extend by 1 hour
         session.extend(Duration::from_secs(3600));
-        
+
         // Should not be expired now
         assert!(!session.is_expired());
     }

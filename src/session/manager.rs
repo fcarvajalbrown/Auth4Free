@@ -8,7 +8,7 @@ use tokio::sync::RwLock;
 use uuid::Uuid;
 
 /// Manages user sessions with in-memory storage
-/// 
+///
 /// This is a basic implementation. For production use,
 /// consider implementing database-backed storage.
 #[derive(Clone)]
@@ -74,7 +74,7 @@ impl SessionManager {
     /// Validate a session by ID
     pub async fn validate_session(&self, session_id: Uuid) -> SessionValidation {
         let sessions = self.sessions.read().await;
-        
+
         match sessions.get(&session_id) {
             Some(session) => {
                 if session.is_expired() {
@@ -101,7 +101,7 @@ impl SessionManager {
     pub async fn revoke_user_sessions(&self, user_id: Uuid) -> usize {
         let mut sessions = self.sessions.write().await;
         let mut count = 0;
-        
+
         sessions.retain(|_, session| {
             if session.user_id == user_id {
                 count += 1;
@@ -110,14 +110,14 @@ impl SessionManager {
                 true // Keep this session
             }
         });
-        
+
         count
     }
 
     /// Extend a session's lifetime
     pub async fn extend_session(&self, session_id: Uuid) -> Result<(), SessionError> {
         let mut sessions = self.sessions.write().await;
-        
+
         match sessions.get_mut(&session_id) {
             Some(session) => {
                 if session.is_expired() {
@@ -134,7 +134,8 @@ impl SessionManager {
     /// Get all active sessions for a user
     pub async fn get_user_sessions(&self, user_id: Uuid) -> Vec<Session> {
         let sessions = self.sessions.read().await;
-        sessions.values()
+        sessions
+            .values()
             .filter(|session| session.user_id == user_id && !session.is_expired())
             .cloned()
             .collect()
@@ -143,7 +144,8 @@ impl SessionManager {
     /// Count active sessions for a user
     pub async fn count_user_sessions(&self, user_id: Uuid) -> usize {
         let sessions = self.sessions.read().await;
-        sessions.values()
+        sessions
+            .values()
             .filter(|session| session.user_id == user_id && !session.is_expired())
             .count()
     }
@@ -157,7 +159,8 @@ impl SessionManager {
     /// Get total number of active sessions
     pub async fn active_session_count(&self) -> usize {
         let sessions = self.sessions.read().await;
-        sessions.values()
+        sessions
+            .values()
             .filter(|session| !session.is_expired())
             .count()
     }
@@ -204,14 +207,17 @@ mod tests {
     async fn test_create_session() {
         let manager = SessionManager::new();
         let user_id = Uuid::new_v4();
-        
-        let session = manager.create_session(
-            user_id,
-            false,
-            Some("127.0.0.1".to_string()),
-            Some("Mozilla/5.0".to_string())
-        ).await.unwrap();
-        
+
+        let session = manager
+            .create_session(
+                user_id,
+                false,
+                Some("127.0.0.1".to_string()),
+                Some("Mozilla/5.0".to_string()),
+            )
+            .await
+            .unwrap();
+
         assert_eq!(session.user_id, user_id);
         assert_eq!(session.ip_address, Some("127.0.0.1".to_string()));
         assert_eq!(session.user_agent, Some("Mozilla/5.0".to_string()));
@@ -221,10 +227,13 @@ mod tests {
     async fn test_validate_session() {
         let manager = SessionManager::new();
         let user_id = Uuid::new_v4();
-        
-        let session = manager.create_session(user_id, false, None, None).await.unwrap();
+
+        let session = manager
+            .create_session(user_id, false, None, None)
+            .await
+            .unwrap();
         let validation = manager.validate_session(session.id).await;
-        
+
         match validation {
             SessionValidation::Valid(_) => assert!(true),
             _ => assert!(false, "Session should be valid"),
@@ -235,10 +244,13 @@ mod tests {
     async fn test_revoke_session() {
         let manager = SessionManager::new();
         let user_id = Uuid::new_v4();
-        
-        let session = manager.create_session(user_id, false, None, None).await.unwrap();
+
+        let session = manager
+            .create_session(user_id, false, None, None)
+            .await
+            .unwrap();
         assert!(manager.revoke_session(session.id).await.is_ok());
-        
+
         let validation = manager.validate_session(session.id).await;
         match validation {
             SessionValidation::Invalid => assert!(true),
@@ -250,16 +262,19 @@ mod tests {
     async fn test_cleanup_expired_sessions() {
         let manager = SessionManager::with_config(Duration::from_secs(0), 10);
         let user_id = Uuid::new_v4();
-        
+
         // Create an expired session
-        let _session = manager.create_session(user_id, false, None, None).await.unwrap();
-        
+        let _session = manager
+            .create_session(user_id, false, None, None)
+            .await
+            .unwrap();
+
         // Small delay to ensure expiration
         tokio::time::sleep(tokio::time::Duration::from_millis(1)).await;
-        
+
         // Cleanup should remove expired sessions
         manager.cleanup_expired_sessions().await;
-        
+
         assert_eq!(manager.active_session_count().await, 0);
     }
 }

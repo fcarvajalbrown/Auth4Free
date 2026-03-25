@@ -9,19 +9,19 @@ use uuid::Uuid;
 pub trait SessionStorage: Send + Sync {
     /// Store a session
     async fn store_session(&self, session: Session) -> Result<(), SessionStorageError>;
-    
+
     /// Retrieve a session by ID
     async fn get_session(&self, session_id: Uuid) -> Result<Option<Session>, SessionStorageError>;
-    
+
     /// Remove a session by ID
     async fn remove_session(&self, session_id: Uuid) -> Result<bool, SessionStorageError>;
-    
+
     /// Remove all sessions for a user
     async fn remove_user_sessions(&self, user_id: Uuid) -> Result<usize, SessionStorageError>;
-    
+
     /// Clean up expired sessions
     async fn cleanup_expired_sessions(&self) -> Result<usize, SessionStorageError>;
-    
+
     /// Count active sessions for a user
     async fn count_user_sessions(&self, user_id: Uuid) -> Result<usize, SessionStorageError>;
 }
@@ -88,7 +88,8 @@ impl SessionStorage for InMemorySessionStorage {
 
     async fn count_user_sessions(&self, user_id: Uuid) -> Result<usize, SessionStorageError> {
         let sessions = self.sessions.read().await;
-        let count = sessions.values()
+        let count = sessions
+            .values()
             .filter(|session| session.user_id == user_id && !session.is_expired())
             .count();
         Ok(count)
@@ -110,7 +111,9 @@ impl std::fmt::Display for SessionStorageError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             SessionStorageError::BackendError(msg) => write!(f, "Backend error: {}", msg),
-            SessionStorageError::SerializationError(msg) => write!(f, "Serialization error: {}", msg),
+            SessionStorageError::SerializationError(msg) => {
+                write!(f, "Serialization error: {}", msg)
+            }
             SessionStorageError::ConnectionError(msg) => write!(f, "Connection error: {}", msg),
         }
     }
@@ -128,19 +131,19 @@ mod tests {
         let storage = InMemorySessionStorage::new();
         let user_id = Uuid::new_v4();
         let session = Session::new(user_id, Duration::from_secs(3600), false);
-        
+
         // Store session
         assert!(storage.store_session(session.clone()).await.is_ok());
-        
+
         // Retrieve session
         let retrieved = storage.get_session(session.id).await.unwrap();
         assert!(retrieved.is_some());
         assert_eq!(retrieved.unwrap().id, session.id);
-        
+
         // Remove session
         assert!(storage.remove_session(session.id).await.unwrap());
         assert!(!storage.remove_session(session.id).await.unwrap()); // Already removed
-        
+
         // Session should not be found
         let retrieved = storage.get_session(session.id).await.unwrap();
         assert!(retrieved.is_none());

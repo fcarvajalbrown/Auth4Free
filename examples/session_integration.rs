@@ -3,12 +3,12 @@
 //! This example shows how to combine password validation, user authentication,
 //! and session management in a complete authentication flow.
 
-use auth4free::password_validation::*;
 use auth4free::auth::authenticate_user;
-use auth4free::session::{SessionManager};
+use auth4free::password_validation::*;
+use auth4free::session::SessionManager;
 use auth4free::user::User;
-use uuid::Uuid;
 use std::time::Duration;
+use uuid::Uuid;
 
 /// Main authentication service that combines all components
 pub struct AuthService {
@@ -37,12 +37,12 @@ impl AuthService {
 
         // In a real app, you'd save the user to a database here
         let user = User::new(username, email);
-        
+
         // Hash password (in real app)
         // let hashed_password = hash_password(&password).await?;
-        
+
         println!("✅ User '{}' registered successfully", user.username);
-        
+
         Ok(RegistrationResult {
             user_id: user.id,
             message: "User registered successfully".to_string(),
@@ -59,55 +59,62 @@ impl AuthService {
     ) -> Result<LoginResult, AuthError> {
         // In a real app, you'd verify credentials against database
         // For demo, we'll simulate successful authentication
-        
+
         // Create a mock user (in real app, fetch from database)
         let user = User::new("demo_user".to_string(), email.clone());
-        
+
         // Simulate authentication
         let _token = authenticate_user(user.clone())
             .await
             .map_err(|e| AuthError::AuthenticationFailed(e))?;
-        
+
         // Create session
-        let session = self.session_manager
+        let session = self
+            .session_manager
             .create_session(
                 user.id,
                 remember_me,
                 ip_address,
-                Some("Demo Client".to_string())
+                Some("Demo Client".to_string()),
             )
             .await
             .map_err(|e| AuthError::SessionError(e.to_string()))?;
 
         println!("✅ User '{}' logged in successfully", user.username);
-        
+
         Ok(LoginResult {
             session_id: session.id,
             user_id: session.user_id,
             refresh_token: session.refresh_token.clone(), // Clone instead of move
-            expires_in: session.time_remaining().unwrap_or(Duration::from_secs(0)).as_secs(),
+            expires_in: session
+                .time_remaining()
+                .unwrap_or(Duration::from_secs(0))
+                .as_secs(),
         })
     }
 
     /// Validate an existing session
-    pub async fn validate_session(&self, session_id: Uuid) -> Result<SessionValidationResult, AuthError> {
+    pub async fn validate_session(
+        &self,
+        session_id: Uuid,
+    ) -> Result<SessionValidationResult, AuthError> {
         let validation = self.session_manager.validate_session(session_id).await;
-        
+
         match validation {
-            auth4free::session::SessionValidation::Valid(session) => { // Use the session parameter
+            auth4free::session::SessionValidation::Valid(session) => {
+                // Use the session parameter
                 Ok(SessionValidationResult::Valid(SessionInfo {
                     session_id: session.id,
                     user_id: session.user_id,
-                    expires_in: session.time_remaining().unwrap_or(Duration::from_secs(0)).as_secs(),
+                    expires_in: session
+                        .time_remaining()
+                        .unwrap_or(Duration::from_secs(0))
+                        .as_secs(),
                     is_persistent: session.is_persistent,
                 }))
             }
-            auth4free::session::SessionValidation::Expired => {
-                Ok(SessionValidationResult::Expired)
-            }
-            auth4free::session::SessionValidation::Invalid => {
-                Ok(SessionValidationResult::Invalid)
-            }
+            auth4free::session::SessionValidation::Expired => Ok(SessionValidationResult::Expired),
+            auth4free::session::SessionValidation::Invalid => Ok(SessionValidationResult::Invalid),
         }
     }
 
@@ -117,7 +124,7 @@ impl AuthService {
             .revoke_session(session_id)
             .await
             .map_err(|e| AuthError::SessionError(e.to_string()))?;
-        
+
         println!("✅ Session revoked successfully");
         Ok(())
     }
@@ -125,14 +132,20 @@ impl AuthService {
     /// Get all active sessions for a user
     pub async fn get_user_sessions(&self, user_id: Uuid) -> Result<Vec<SessionInfo>, AuthError> {
         let sessions = self.session_manager.get_user_sessions(user_id).await;
-        
-        let session_infos = sessions.into_iter().map(|session| SessionInfo {
-            session_id: session.id,
-            user_id: session.user_id,
-            expires_in: session.time_remaining().unwrap_or(Duration::from_secs(0)).as_secs(),
-            is_persistent: session.is_persistent,
-        }).collect();
-        
+
+        let session_infos = sessions
+            .into_iter()
+            .map(|session| SessionInfo {
+                session_id: session.id,
+                user_id: session.user_id,
+                expires_in: session
+                    .time_remaining()
+                    .unwrap_or(Duration::from_secs(0))
+                    .as_secs(),
+                is_persistent: session.is_persistent,
+            })
+            .collect();
+
         Ok(session_infos)
     }
 }
@@ -219,7 +232,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .login(
             "john@example.com".to_string(),
             "MySecureP@ssw0rd!".to_string(),
-            true, // remember me
+            true,                            // remember me
             Some("192.168.1.1".to_string()), // IP address
         )
         .await?;
@@ -248,21 +261,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 4. Get user sessions
     println!("4. Getting user sessions:");
-    let user_sessions = auth_service
-        .get_user_sessions(login_result.user_id)
-        .await?;
+    let user_sessions = auth_service.get_user_sessions(login_result.user_id).await?;
 
     println!("   Found {} active sessions", user_sessions.len());
     for session in user_sessions {
-        println!("   - Session: {} (expires in {}s)", session.session_id, session.expires_in);
+        println!(
+            "   - Session: {} (expires in {}s)",
+            session.session_id, session.expires_in
+        );
     }
     println!();
 
     // 5. Logout
     println!("5. Logging out:");
-    auth_service
-        .logout(login_result.session_id)
-        .await?;
+    auth_service.logout(login_result.session_id).await?;
 
     // 6. Try to validate revoked session
     println!("6. Validating revoked session:");
