@@ -132,7 +132,6 @@ impl RateLimitState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::thread;
     use std::time::Duration as StdDuration;
 
     #[test]
@@ -186,25 +185,25 @@ mod tests {
 
     #[test]
     fn test_window_reset() {
+        use std::time::Duration;
+        
         let mut state = RateLimitState::new("test_user".to_string());
         let config = RateLimitConfig {
             max_attempts: 2,
-            window_duration: StdDuration::from_secs(1), // Very short window
-            lockout_duration: StdDuration::from_secs(300),
+            window_duration: Duration::from_secs(1),
+            lockout_duration: Duration::from_secs(300),
             reset_on_success: true,
         };
 
-        // Record failures
-        state.record_failure(&config);
-        state.record_failure(&config);
-
-        assert_eq!(state.attempt_count, 2);
-
-        // Wait for window to expire
-        thread::sleep(StdDuration::from_secs(2));
-
+        // Manually set up a state with expired window
+        state.attempt_count = 2;
+        state.window_start = SystemTime::now() - Duration::from_secs(2); // 2 seconds ago
+        
         // Record another failure - should reset window
         state.record_failure(&config);
-        assert_eq!(state.attempt_count, 1); // Reset to 1
+        
+        // Window has expired, so we start a new window with 1 attempt
+        assert_eq!(state.attempt_count, 1);
     }
+
 }

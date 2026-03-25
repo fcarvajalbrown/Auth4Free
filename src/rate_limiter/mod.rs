@@ -1,5 +1,5 @@
 //! Rate limiting for authentication attempts
-//!
+//! 
 //! Provides protection against brute force attacks by limiting
 //! the number of authentication attempts within a time window.
 
@@ -7,6 +7,7 @@ pub mod limiter;
 pub mod models;
 pub mod storage;
 
-pub use limiter::RateLimiter;
+// Fix the exports - export the right items
+pub use limiter::{RateLimiter, RateLimitResult};
 pub use models::{RateLimitConfig, RateLimitState};
-pub use storage::{InMemoryStorage, Storage};
+pub use storage::InMemoryRateLimitStorage;
