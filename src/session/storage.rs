@@ -40,6 +40,13 @@ impl InMemorySessionStorage {
     }
 }
 
+impl Default for InMemorySessionStorage {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+
 #[async_trait::async_trait]
 impl SessionStorage for InMemorySessionStorage {
     async fn store_session(&self, session: Session) -> Result<(), SessionStorageError> {

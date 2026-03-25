@@ -38,6 +38,13 @@ impl InMemoryRateLimitStorage {
     }
 }
 
+impl Default for InMemoryRateLimitStorage {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+
 #[async_trait::async_trait]
 impl RateLimitStorage for InMemoryRateLimitStorage {
     async fn get_state(&self, identifier: &str) -> Option<RateLimitState> {
