@@ -14,10 +14,7 @@ fn test_too_short_password() {
         ..Default::default()
     };
     let result = validate_password("short", &config);
-    assert_eq!(
-        result,
-        Err(PasswordValidationError::TooShort(5, 12))
-    );
+    assert_eq!(result, Err(PasswordValidationError::TooShort(5, 12)));
 }
 
 #[test]
@@ -69,7 +66,10 @@ fn test_consecutive_characters() {
         ..Default::default()
     };
     let result = validate_password("aaa123AAA!!!", &config);
-    assert_eq!(result, Err(PasswordValidationError::TooManyConsecutiveChars('a', 3)));
+    assert_eq!(
+        result,
+        Err(PasswordValidationError::TooManyConsecutiveChars('a', 3))
+    );
 }
 
 #[test]
@@ -77,15 +77,18 @@ fn test_password_strength_scoring() {
     // Test various password strengths
     let very_weak = password_strength_score("password");
     let strong = password_strength_score("MySecureP@ssw0rd!");
-    
+
     println!("'password' score: {}", very_weak);
     println!("'MySecureP@ssw0rd!' score: {}", strong);
-    
+
     // Test that strong passwords are stronger than weak ones
-    assert!(very_weak < strong, 
-            "Weak password ({}) should score less than strong password ({})", 
-            very_weak, strong);
-    
+    assert!(
+        very_weak < strong,
+        "Weak password ({}) should score less than strong password ({})",
+        very_weak,
+        strong
+    );
+
     // Test reasonable bounds
     assert!(very_weak <= 100);
     assert!(strong <= 100);

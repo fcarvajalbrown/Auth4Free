@@ -5,10 +5,26 @@ use std::collections::HashSet;
 /// Checks if a password is in the list of commonly used passwords
 pub fn is_common_password(password: &str) -> bool {
     let common_passwords: HashSet<&str> = [
-        "password", "123456", "qwerty", "admin", "welcome",
-        "password123", "abc123", "letmein", "monkey", "dragon",
-        "master", "mustang", "shadow", "baseball", "donald",
-        "superman", "harley", "12345678", "qazwsx", "princess",
+        "password",
+        "123456",
+        "qwerty",
+        "admin",
+        "welcome",
+        "password123",
+        "abc123",
+        "letmein",
+        "monkey",
+        "dragon",
+        "master",
+        "mustang",
+        "shadow",
+        "baseball",
+        "donald",
+        "superman",
+        "harley",
+        "12345678",
+        "qazwsx",
+        "princess",
     ]
     .iter()
     .cloned()

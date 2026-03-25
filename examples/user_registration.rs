@@ -3,8 +3,8 @@
 //! This demonstrates integrating password validation into a user
 //! registration workflow.
 
-use authlib::password_validation::*;
 use authlib::password_hasher;
+use authlib::password_validation::*;
 use authlib::user::User;
 use uuid::Uuid;
 
@@ -39,23 +39,26 @@ impl UserService {
         password: String,
     ) -> Result<User, Box<dyn std::error::Error>> {
         // Validate password first
-        validate_password(&password, &self.password_config)
-            .map_err(|e| RegistrationError { 
-                message: format!("Password validation failed: {}", e) 
-            })?;
+        validate_password(&password, &self.password_config).map_err(|e| RegistrationError {
+            message: format!("Password validation failed: {}", e),
+        })?;
 
         // Check password strength (optional warning)
         let score = password_strength_score(&password);
         let category = password_strength_category(score);
-        
+
         if score < 50 {
-            println!("⚠️  Warning: Password strength is '{}'. Consider using a stronger password.", category);
+            println!(
+                "⚠️  Warning: Password strength is '{}'. Consider using a stronger password.",
+                category
+            );
         }
 
         // Hash password (simulated)
-        let _hashed_password = password_hasher::hash_password(&password).await
-            .map_err(|e| RegistrationError { 
-                message: format!("Failed to hash password: {}", e) 
+        let _hashed_password = password_hasher::hash_password(&password)
+            .await
+            .map_err(|e| RegistrationError {
+                message: format!("Failed to hash password: {}", e),
             })?;
 
         // Create user (simulated)
@@ -67,7 +70,7 @@ impl UserService {
 
         println!("✅ User '{}' registered successfully!", user.username);
         println!("   Password strength: {} ({}/100)", category, score);
-        
+
         Ok(user)
     }
 }

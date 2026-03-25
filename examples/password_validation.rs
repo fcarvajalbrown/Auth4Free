@@ -12,12 +12,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("1. Basic Password Validation");
     let config = PasswordValidationConfig::default();
     let password = "MySecureP@ssw0rd!";
-    
+
     match validate_password(password, &config) {
         Ok(()) => println!("✅ Password '{}' is valid", password),
         Err(e) => println!("❌ Password invalid: {}", e),
     }
-    
+
     // Show password strength
     let score = password_strength_score(password);
     let category = password_strength_category(score);
@@ -53,7 +53,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         min_length: 12,
         require_uppercase: true,
         require_lowercase: true,
-        require_numbers: false,  // Don't require numbers
+        require_numbers: false, // Don't require numbers
         require_special_chars: true,
         max_consecutive_same_char: Some(2), // Max 2 consecutive same chars
     };

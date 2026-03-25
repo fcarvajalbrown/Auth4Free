@@ -1,7 +1,7 @@
 // src/password_hasher/mod.rs
 
-pub use self::hasher::*;
 pub use self::constants::*;
+pub use self::hasher::*;
 
-mod hasher;
 mod constants;
+mod hasher;

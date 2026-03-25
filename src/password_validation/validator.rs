@@ -1,7 +1,7 @@
 //! Password validation logic
 
-use std::collections::HashSet;
 use crate::password_validation::errors::PasswordValidationError;
+use std::collections::HashSet;
 
 /// Configuration for password validation rules
 #[derive(Debug, Clone)]
@@ -114,10 +114,26 @@ pub fn validate_password(
 /// Checks if a password is in the list
 fn is_common_password(password: &str) -> bool {
     let common_passwords: HashSet<&str> = [
-        "password", "123456", "qwerty", "admin", "welcome",
-        "password123", "abc123", "letmein", "monkey", "dragon",
-        "master", "mustang", "shadow", "baseball", "donald",
-        "superman", "harley", "12345678", "qazwsx", "princess",
+        "password",
+        "123456",
+        "qwerty",
+        "admin",
+        "welcome",
+        "password123",
+        "abc123",
+        "letmein",
+        "monkey",
+        "dragon",
+        "master",
+        "mustang",
+        "shadow",
+        "baseball",
+        "donald",
+        "superman",
+        "harley",
+        "12345678",
+        "qazwsx",
+        "princess",
     ]
     .iter()
     .cloned()
@@ -146,10 +162,7 @@ mod tests {
         };
         let password = "too_short"; // Exactly 9 characters
         let result = validate_password(password, &config);
-        assert_eq!(
-            result,
-            Err(PasswordValidationError::TooShort(9, 20))
-        );
+        assert_eq!(result, Err(PasswordValidationError::TooShort(9, 20)));
     }
 
     #[test]
@@ -170,10 +183,9 @@ mod tests {
             min_length: 1,
             ..Default::default()
         };
-        
+
         // "password" is in our common list, should fail validation
         let result = validate_password("password", &config);
         assert_eq!(result, Err(PasswordValidationError::TooCommon));
     }
 }
-

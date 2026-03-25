@@ -1,7 +1,7 @@
 // src/auth/mod.rs
 
-pub mod service;
 pub mod middleware;
+pub mod service;
 
-pub use service::*;
 pub use middleware::*;
+pub use service::*;

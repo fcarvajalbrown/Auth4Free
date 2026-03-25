@@ -1,11 +1,11 @@
 //! Password validation and strength checking module
 
-pub mod validator;
-pub mod scorer;
+pub mod common;
 pub mod errors;
-pub mod common; // Add this
+pub mod scorer;
+pub mod validator; // Add this
 
-pub use validator::*;
-pub use scorer::*;
+pub use common::is_common_password;
 pub use errors::*;
-pub use common::is_common_password; // Export this function
+pub use scorer::*;
+pub use validator::*; // Export this function

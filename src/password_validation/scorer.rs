@@ -61,13 +61,13 @@ pub fn password_strength_score(password: &str) -> u32 {
 
     // Penalties
     let chars: Vec<char> = password.chars().collect();
-    
+
     // Sequential letters penalty
     for window in chars.windows(3) {
         let first = window[0] as u32;
         let second = window[1] as u32;
         let third = window[2] as u32;
-        
+
         if second == first + 1 && third == second + 1 {
             score = score.saturating_sub(15);
         }
@@ -79,7 +79,7 @@ pub fn password_strength_score(password: &str) -> u32 {
             let first = window[0] as u32;
             let second = window[1] as u32;
             let third = window[2] as u32;
-            
+
             if second == first + 1 && third == second + 1 {
                 score = score.saturating_sub(15);
             }
@@ -118,20 +118,34 @@ mod tests {
         let weak = password_strength_score("password123");
         let medium = password_strength_score("Password123");
         let strong = password_strength_score("MySecureP@ssw0rd!");
-        
+
         println!("'a' score: {}", trivial);
         println!("'aaaaaa' score: {}", very_weak);
         println!("'password123' score: {}", weak);
         println!("'Password123' score: {}", medium);
         println!("'MySecureP@ssw0rd!' score: {}", strong);
-        
+
         // Test that clearly weak passwords score lower than clearly strong ones
-        assert!(trivial < strong, "Trivial password should be weaker than strong password");
-        assert!(weak < strong, "Weak password should be weaker than strong password");
-        
+        assert!(
+            trivial < strong,
+            "Trivial password should be weaker than strong password"
+        );
+        assert!(
+            weak < strong,
+            "Weak password should be weaker than strong password"
+        );
+
         // Test reasonable bounds
-        assert!(trivial <= 20, "Trivial password should be very weak (got {})", trivial);
-        assert!(strong >= 80, "Strong password should score high (got {})", strong);
+        assert!(
+            trivial <= 20,
+            "Trivial password should be very weak (got {})",
+            trivial
+        );
+        assert!(
+            strong >= 80,
+            "Strong password should score high (got {})",
+            strong
+        );
     }
 
     #[test]

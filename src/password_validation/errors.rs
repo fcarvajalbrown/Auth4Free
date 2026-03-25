@@ -17,7 +17,11 @@ impl std::fmt::Display for PasswordValidationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             PasswordValidationError::TooShort(actual, min) => {
-                write!(f, "Password too short: {} characters, minimum required: {}", actual, min)
+                write!(
+                    f,
+                    "Password too short: {} characters, minimum required: {}",
+                    actual, min
+                )
             }
             PasswordValidationError::MissingUppercase => {
                 write!(f, "Password must contain at least one uppercase letter")
